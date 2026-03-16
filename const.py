@@ -1,6 +1,6 @@
 # Datasets
 AGEDB_MAIN_PATH = "./data/agedb"
-AGEDB_IMAGE_LIST = AGEDB_MAIN_PATH + "/img_short.list"
+AGEDB_IMAGE_LIST = AGEDB_MAIN_PATH + "/img.list"
 AGEDB_PAIR_LIST = AGEDB_MAIN_PATH + "/pair.list"
 
 LFW_MAIN_PATH = "./data/lfw"

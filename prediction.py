@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from scipy.spatial.distance import cosine
+from sklearn.metrics.pairwise import cosine_distances
 
 from const import AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH, PREDICTION_CSV, FEATURES_CSV, THRESHOLD
 
@@ -23,7 +23,7 @@ def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
 
         pred = 0
         for det1, det2 in itertools.product(img1_data["detections"].iloc[0], img2_data["detections"].iloc[0]):
-            dist = cosine(det1['features'], det2['features'])
+            dist = cosine_distances([det1['features']], [det2['features']])
             pred = 1 if dist < THRESHOLD else 0
             if pred == 1:
               break
@@ -31,7 +31,7 @@ def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
         result = pd.DataFrame({
             "img_1_id": pair[0],
             "img_2_id": pair[1],
-            "distance": dist,
+            "distance": dist[0],
             "prediction": pred,
             "label": pair[2]
         }, index=[0])

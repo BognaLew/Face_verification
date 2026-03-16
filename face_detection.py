@@ -6,57 +6,63 @@ from deepface import DeepFace
 import numpy as np
 import pandas as pd
 
-from config import AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, ALIGNED_FACES_CATALOG, \
-    ALIGNED_DETECTIONS_CSV, DETECTIONS_CSV, DETECTOR_BACKEND, \
-    FACES_CATALOG
+from const import AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, ALIGNED_FACES_DIR, \
+    ALIGNED_DETECTIONS_CSV, DETECTIONS_CSV, DETECTOR_BACKEND, FACES_DIR
 
 
-def process_detections(detections: List[Dict[str, Any]], image_path: str, image_id: int, 
-                       images_path: str, detections_csv: str) -> None:
+def process_detections(detections: List[Dict[str, Any]], image_id: int,
+                       images_path: str) -> List[Dict[str, Any]]:
     """
-    Saves image fragments with detected faces and processes detection informations.
+    Saves image fragments with detected faces and processes detection 
+    informations.
 
     Args:
-        detections (List[Dict[str, Any]]): Output of DeepFace.extract_faces() function.
-        image_path (str): Path of the processed image.
+        detections (List[Dict[str, Any]]): Output of DeepFace.extract_faces() 
+            function.
         image_id (int): Index of the processed image.
-        images_path (str): Path to the catalog where fragments with detected faces are going to 
+        images_path (str): Path to the catalog where fragments with detected 
+            faces are going to
             be stored.
-        detections_csv (str): Path to csv file where detection information is going to be stored.
-        align (bool): Flag to enable face alignment (default is True).
+    Returns:
+        (List[Dict[str, Any]]): List of processed data for each detected face.
     """
+    results = []
     for i, detection in enumerate(detections):
         face = detection["face"]
 
-        # Values of pixels returned by DeepFace.extract_faces(...) are in range from 0 to 1, 
-        # therefore they need to be cast to range from 0 to 255, otherwise the result will 
-        # be black rectangle.
+        # Values of pixels returned by DeepFace.extract_faces(...) are in range 
+        # from 0 to 1, therefore they need to be cast to range from 0 to 255, 
+        # otherwise the result will be black rectangle.
         if face.max() <= 1.0:
             face = (face * 255).astype(np.uint8)
-        pd.DataFrame({
-            "image_path": image_path,
+
+        file_path = os.path.join(images_path, f"{image_id}_{i}.jpg")
+        results.append({
+            "face_image_path": file_path,
             "facial_area": detection["facial_area"],
             "confidence": detection["confidence"]
-        }).to_csv(detections_csv, mode='a', index=False)
+        })
 
-        filename = f"{image_id}_{i}.jpg"
         cv2.imwrite(
-            os.path.join(images_path, filename), 
+            file_path,
             cv2.cvtColor(face, cv2.COLOR_RGB2BGR)
         )
+    return results
 
 
-def detect_faces_from_image(image_path: str, image_id: int, images_path: str, detections_csv: str, align: bool=True):
+def detect_faces_from_image(image_path: str, image_id: int, images_path: str, 
+                            detections_csv: str, align: bool=True):
     """
-    Runs DeepFace.extract_faces() function to get face detections and detection results from an 
-        image.
+    Runs DeepFace.extract_faces() function to get face detections and detection 
+        results from an image.
 
     Args:
         image_path (str): Path of the processed image.
         image_id (int): Index of the processed image.
-        images_path (str): Path to the catalog where fragments with detected faces are going to
-            be stored.
-        detections_csv (str): Path to csv file where detection information is going to be stored.
+        images_path (str): Path to the catalog where fragments with detected 
+            faces are going to be stored.
+        detections_csv (str): Path to csv file where detection information is 
+            going to be stored.
         align (bool): Flag to enable face alignment (default is True).
     """
     try:
@@ -66,12 +72,17 @@ def detect_faces_from_image(image_path: str, image_id: int, images_path: str, de
             enforce_detection=False,
             align=align
         )
-        
-        process_detections(detections, image_path, image_id, images_path, detections_csv)
+
+        results = process_detections(detections, image_id, images_path)
+        header = True if image_id==0 else False
+        pd.DataFrame([{
+            "img_id": image_id,
+            "detections": results
+        }]).to_csv(detections_csv, mode='a', header=header, index=False)
     except:
         pass
 
-def detect_faces(image_list_path: str, results_path: str, align: bool=True) -> None:
+def detect_faces(image_list_path: str, results_path: str, align: bool=True) -> str:
     """
     Runs face detection for each image from the list.
 
@@ -79,22 +90,26 @@ def detect_faces(image_list_path: str, results_path: str, align: bool=True) -> N
         image_list_path (str): Path to the file with a list of image paths.
         results_path (str): Path where detection results are going to be stored.
         align (bool): Flag to enable face alignment (default is True).
+    Returns:
+        (str): Path to a csv file with detection data.
     """
-    images_path = os.path.join(results_path, ALIGNED_FACES_CATALOG) if align is True else \
-        os.path.join(results_path, FACES_CATALOG)
-    os.makedirs(images_path, exist_ok=True)
+    imgs_path = os.path.join(results_path, ALIGNED_FACES_DIR) \
+        if align is True else os.path.join(results_path, FACES_DIR)
+    os.makedirs(imgs_path, exist_ok=True)
 
-    detections_csv = os.path.join(results_path, ALIGNED_DETECTIONS_CSV) if align is True else \
-        os.path.join(results_path, DETECTIONS_CSV)
+    detections_csv = os.path.join(results_path, ALIGNED_DETECTIONS_CSV) \
+        if align is True else  os.path.join(results_path, DETECTIONS_CSV)
+
     if os.path.exists(detections_csv):
-        os.remove(detections_csv) 
+        os.remove(detections_csv)
 
     with open(image_list_path) as list_file:
-        for i, image_path in enumerate(list_file):
-            image_path = image_path.strip()
-            print(f'Processing: {image_path}')
-            detect_faces_from_image(image_path, i, images_path, detections_csv, align)
+        for i, img_path in enumerate(list_file):
+            img_path = img_path.strip()
+            print(f'Processing: {img_path}')
+            detect_faces_from_image(img_path, i, imgs_path, detections_csv, align)
+    return detections_csv
 
 
 if __name__=="__main__":
-    detect_faces(AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH)
+    _ = detect_faces(AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, align=False)

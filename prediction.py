@@ -20,7 +20,7 @@ def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
     for pair in pair_list_content:
         img1_data = features_csv.loc[features_csv["img_id"] == pair[0]]
         img2_data = features_csv.loc[features_csv["img_id"] == pair[1]]
-        
+
         pred = 0
         for det1, det2 in itertools.product(img1_data["detections"].iloc[0], img2_data["detections"].iloc[0]):
             dist = cosine(det1['features'], det2['features'])

@@ -4,7 +4,7 @@ import os
 from deepface import DeepFace
 import pandas as pd
 
-from const import ALIGNED_FACES_DIR, AGEDB_RESULTS_PATH, FEATURES_CSV, \
+from const import AGEDB_RESULTS_PATH, DETECTIONS_CSV, FEATURES_CSV, \
     FEATURE_EXTRACTION_MODEL, LFW_RESULTS_PATH
 
 
@@ -44,4 +44,5 @@ def extract_features(detections_csv: str, features_csv: str):
 
 
 if __name__=="__main__":
-    _ = extract_features(os.path.join(LFW_RESULTS_PATH, ALIGNED_FACES_DIR), os.path.join(LFW_RESULTS_PATH, FEATURES_CSV))
+    _ = extract_features(os.path.join(LFW_RESULTS_PATH, DETECTIONS_CSV), 
+                         os.path.join(LFW_RESULTS_PATH, FEATURES_CSV))

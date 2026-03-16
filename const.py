@@ -1,6 +1,6 @@
 # Datasets
 AGEDB_MAIN_PATH = "./data/agedb"
-AGEDB_IMAGE_LIST = AGEDB_MAIN_PATH + "/img.list"
+AGEDB_IMAGE_LIST = AGEDB_MAIN_PATH + "/img_short.list"
 AGEDB_PAIR_LIST = AGEDB_MAIN_PATH + "/pair.list"
 
 LFW_MAIN_PATH = "./data/lfw"
@@ -13,10 +13,8 @@ LFW_RESULTS_PATH = "./results/lfw"
 
 # Detection config
 DETECTOR_BACKEND = "retinaface"
-ALIGNED_DETECTIONS_CSV = "aligned_detections.csv"
 DETECTIONS_CSV = "detections.csv"
 FACES_DIR = "faces"
-ALIGNED_FACES_DIR = "aligned_faces"
 
 # Feature extraction config
 FEATURE_EXTRACTION_MODEL = "ArcFace"

@@ -6,8 +6,8 @@ from deepface import DeepFace
 import numpy as np
 import pandas as pd
 
-from const import AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, ALIGNED_FACES_DIR, \
-    ALIGNED_DETECTIONS_CSV, DETECTIONS_CSV, DETECTOR_BACKEND, FACES_DIR
+from const import AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, \
+    DETECTIONS_CSV, DETECTOR_BACKEND, FACES_DIR
 
 
 def process_detections(detections: List[Dict[str, Any]], image_id: int,
@@ -93,12 +93,10 @@ def detect_faces(image_list_path: str, results_path: str, align: bool=True) -> s
     Returns:
         (str): Path to a csv file with detection data.
     """
-    imgs_path = os.path.join(results_path, ALIGNED_FACES_DIR) \
-        if align is True else os.path.join(results_path, FACES_DIR)
+    imgs_path = os.path.join(results_path, FACES_DIR)
     os.makedirs(imgs_path, exist_ok=True)
 
-    detections_csv = os.path.join(results_path, ALIGNED_DETECTIONS_CSV) \
-        if align is True else  os.path.join(results_path, DETECTIONS_CSV)
+    detections_csv = os.path.join(results_path, DETECTIONS_CSV)
 
     if os.path.exists(detections_csv):
         os.remove(detections_csv)
@@ -112,4 +110,4 @@ def detect_faces(image_list_path: str, results_path: str, align: bool=True) -> s
 
 
 if __name__=="__main__":
-    _ = detect_faces(AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, align=False)
+    _ = detect_faces(AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH)

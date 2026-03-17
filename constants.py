@@ -22,4 +22,4 @@ FEATURES_CSV = "features.csv"
 
 # Distance config
 PREDICTION_CSV = "prediction.csv"
-THRESHOLD = .65
+THRESHOLD = .23

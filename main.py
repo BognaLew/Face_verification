@@ -1,11 +1,11 @@
 import os
 
-from const import AGEDB_IMAGE_LIST, AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH, \
-    FEATURES_CSV, PREDICTION_CSV
-from evaluate import evaluate
-from face_detection import detect_faces
-from feature_extraction import extract_features
-from prediction import predict
+from constants import AGEDB_IMAGE_LIST, AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH
+from components.evaluate import evaluate
+from components.face_detection import detect_faces
+from components.feature_extraction import extract_features
+from components.prediction import predict
+
 
 def pipeline(list_path: str, pair_path: str, results_path: str):
     detections_csv = detect_faces(list_path, results_path)
@@ -19,5 +19,8 @@ def pipeline(list_path: str, pair_path: str, results_path: str):
 
 
 if __name__=="__main__":
+    from constants import AGEDB_IMAGE_LIST, AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH
+
     metrics = pipeline(AGEDB_IMAGE_LIST, AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH)
     print(metrics)
+    

@@ -1,10 +1,10 @@
 import os
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix, f1_score, roc_auc_score, roc_curve
+from sklearn.metrics import f1_score, roc_auc_score
 
-from const import AGEDB_RESULTS_PATH, LFW_RESULTS_PATH, PREDICTION_CSV
 
 def evaluate(prediction_df: pd.DataFrame):
     y_true = prediction_df["label"]
@@ -18,7 +18,6 @@ def evaluate(prediction_df: pd.DataFrame):
     frr  = ((y_pred == 0) & genuines).sum() / genuines.sum()
 
     auc = roc_auc_score(y_true, score)
-
     f_score = f1_score(y_true, y_pred)
     
     metrics = {
@@ -32,6 +31,8 @@ def evaluate(prediction_df: pd.DataFrame):
 
 
 if __name__=="__main__":
+    from constants import AGEDB_RESULTS_PATH, LFW_RESULTS_PATH, PREDICTION_CSV
+
     predictions = pd.read_csv(os.path.join(AGEDB_RESULTS_PATH, PREDICTION_CSV))
     metrics = evaluate(predictions)
     print(metrics)

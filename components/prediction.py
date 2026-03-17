@@ -6,12 +6,12 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
-from const import AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH, LFW_PAIR_LIST, \
-    LFW_RESULTS_PATH, PREDICTION_CSV, FEATURES_CSV, THRESHOLD
+from constants import THRESHOLD
 
-def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
-    if os.path.exists(distance_csv):
-        os.remove(distance_csv)
+
+def predict(pair_list_path: str, features: pd.DataFrame, prediction_csv: str):
+    if os.path.exists(prediction_csv):
+        os.remove(prediction_csv)
 
     pair_list_content = np.loadtxt(pair_list_path, dtype=int)
 
@@ -19,11 +19,12 @@ def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
 
     header = True
     for pair in pair_list_content:
-        img1_data = features_csv.loc[features_csv["img_id"] == pair[0]]
-        img2_data = features_csv.loc[features_csv["img_id"] == pair[1]]
+        img1_data = features.loc[features["img_id"] == pair[0]]
+        img2_data = features.loc[features["img_id"] == pair[1]]
 
         pred = 0
-        for det1, det2 in itertools.product(img1_data["detections"].iloc[0], img2_data["detections"].iloc[0]):
+        for det1, det2 in itertools.product(img1_data["detections"].iloc[0], 
+           img2_data["detections"].iloc[0]):
             img1_f = np.array(det1['features'])
             img2_f = np.array(det2['features'])
             
@@ -45,16 +46,20 @@ def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
 
         results_df = pd.concat([results_df, result], ignore_index=True)
 
-        result.to_csv(distance_csv, mode='a', header=header, index=False)
+        result.to_csv(prediction_csv, mode='a', header=header, index=False)
         if header:
           header = False
     return results_df
 
 
 if __name__=="__main__":
-    features = pd.read_csv(os.path.join(AGEDB_RESULTS_PATH, FEATURES_CSV), 
+    from constants import AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH, LFW_PAIR_LIST, \
+        LFW_RESULTS_PATH, PREDICTION_CSV, FEATURES_CSV
+    
+    features = pd.read_csv(os.path.join(LFW_RESULTS_PATH, FEATURES_CSV), 
                            converters={"detections": ast.literal_eval})
 
-    _ = predict(AGEDB_PAIR_LIST,
-                features,
-                os.path.join(AGEDB_RESULTS_PATH, PREDICTION_CSV))
+    predict(pair_list_path=LFW_PAIR_LIST,
+            features=features,
+            prediction_csv=os.path.join(LFW_RESULTS_PATH, PREDICTION_CSV))
+    

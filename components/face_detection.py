@@ -6,8 +6,7 @@ from deepface import DeepFace
 import numpy as np
 import pandas as pd
 
-from const import AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, \
-    DETECTIONS_CSV, DETECTOR_BACKEND, FACES_DIR
+from constants import DETECTIONS_CSV, DETECTOR_BACKEND, FACES_DIR
 
 
 def process_detections(detections: List[Dict[str, Any]], image_id: int,
@@ -82,7 +81,7 @@ def detect_faces_from_image(image_path: str, image_id: int, images_path: str,
     except:
         pass
 
-def detect_faces(image_list_path: str, results_path: str, align: bool=True) -> str:
+def detect_faces(img_list_path: str, results_path: str, align: bool=True) -> str:
     """
     Runs face detection for each image from the list.
 
@@ -101,13 +100,21 @@ def detect_faces(image_list_path: str, results_path: str, align: bool=True) -> s
     if os.path.exists(detections_csv):
         os.remove(detections_csv)
 
-    with open(image_list_path) as list_file:
+    with open(img_list_path) as list_file:
         for i, img_path in enumerate(list_file):
             img_path = img_path.strip()
             print(f'Processing: {img_path}')
-            detect_faces_from_image(img_path, i, imgs_path, detections_csv, align)
+            detect_faces_from_image(
+                image_path=img_path, 
+                image_id=i, 
+                images_path=imgs_path, 
+                detections_csv=detections_csv, 
+                align=align)
     return detections_csv
 
 
 if __name__=="__main__":
-    _ = detect_faces(AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH)
+    from constants import AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, \
+       LFW_IMAGE_LIST, LFW_RESULTS_PATH
+    
+    detect_faces(AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH)

@@ -4,9 +4,10 @@ import os
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_distances
+from sklearn.metrics.pairwise import cosine_similarity
 
-from const import AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH, PREDICTION_CSV, FEATURES_CSV, THRESHOLD
+from const import AGEDB_PAIR_LIST, AGEDB_RESULTS_PATH, LFW_PAIR_LIST, \
+    LFW_RESULTS_PATH, PREDICTION_CSV, FEATURES_CSV, THRESHOLD
 
 def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
     if os.path.exists(distance_csv):
@@ -23,15 +24,21 @@ def predict(pair_list_path: str, features_csv: pd.DataFrame, distance_csv: str):
 
         pred = 0
         for det1, det2 in itertools.product(img1_data["detections"].iloc[0], img2_data["detections"].iloc[0]):
-            dist = cosine_distances([det1['features']], [det2['features']])
-            pred = 1 if dist < THRESHOLD else 0
+            img1_f = np.array(det1['features'])
+            img2_f = np.array(det2['features'])
+            
+            img1_f = img1_f/np.linalg.norm(img1_f)
+            img2_f = img2_f/np.linalg.norm(img2_f)
+
+            score = cosine_similarity([img1_f], [img2_f])
+            pred = 1 if score > THRESHOLD else 0
             if pred == 1:
               break
 
         result = pd.DataFrame({
             "img_1_id": pair[0],
             "img_2_id": pair[1],
-            "distance": dist[0],
+            "similarity": score[0],
             "prediction": pred,
             "label": pair[2]
         }, index=[0])

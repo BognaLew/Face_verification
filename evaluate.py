@@ -4,18 +4,20 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix, f1_score, roc_auc_score, roc_curve
 
-from const import AGEDB_RESULTS_PATH, PREDICTION_CSV
+from const import AGEDB_RESULTS_PATH, LFW_RESULTS_PATH, PREDICTION_CSV
 
 def evaluate(prediction_df: pd.DataFrame):
     y_true = prediction_df["label"]
     y_pred = prediction_df["prediction"]
-    dist = -prediction_df["distance"]
+    score = prediction_df["similarity"]
+    
+    impostors = y_true == 0
+    genuines = y_true == 1
 
-    tn, fp, fn, tp = confusion_matrix(y_pred, y_true).ravel()
+    far = ((y_pred == 1) & impostors).sum() / impostors.sum()
+    frr  = ((y_pred == 0) & genuines).sum() / genuines.sum()
 
-    far = fp / (fp + tn)
-    frr = fn / (fn + tp)
-    auc = roc_auc_score(y_true, dist)
+    auc = roc_auc_score(y_true, score)
 
     f_score = f1_score(y_true, y_pred)
     

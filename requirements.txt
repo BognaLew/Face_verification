@@ -2,4 +2,6 @@ deepface
 numpy
 opencv-python
 pandas
+scikit-learn
+tf-keras
 torch

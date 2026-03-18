@@ -11,9 +11,8 @@ from constants import DETECTIONS_CSV, DETECTOR_BACKEND, FACES_DIR
 
 def process_detections(detections: List[Dict[str, Any]], image_id: int,
                        images_path: str) -> List[Dict[str, Any]]:
-    """
-    Saves image fragments with detected faces and processes detection 
-    informations.
+    """Saves image fragments with detected faces and processes detection 
+       informations.
 
     Args:
         detections (List[Dict[str, Any]]): Output of DeepFace.extract_faces() 
@@ -23,7 +22,7 @@ def process_detections(detections: List[Dict[str, Any]], image_id: int,
             faces are going to
             be stored.
     Returns:
-        (List[Dict[str, Any]]): List of processed data for each detected face.
+        List[Dict[str, Any]]: List of processed data for each detected face.
     """
     results = []
     for i, detection in enumerate(detections):
@@ -51,8 +50,7 @@ def process_detections(detections: List[Dict[str, Any]], image_id: int,
 
 def detect_faces_from_image(image_path: str, image_id: int, images_path: str, 
                             detections_csv: str, align: bool=True):
-    """
-    Runs DeepFace.extract_faces() function to get face detections and detection 
+    """Runs DeepFace.extract_faces() function to get face detections and detection 
         results from an image.
 
     Args:
@@ -82,15 +80,14 @@ def detect_faces_from_image(image_path: str, image_id: int, images_path: str,
         pass
 
 def detect_faces(img_list_path: str, results_path: str, align: bool=True) -> str:
-    """
-    Runs face detection for each image from the list.
+    """Runs face detection for each image from the list.
 
     Args:
         image_list_path (str): Path to the file with a list of image paths.
         results_path (str): Path where detection results are going to be stored.
         align (bool): Flag to enable face alignment (default is True).
     Returns:
-        (str): Path to a csv file with detection data.
+        str: Path to a csv file with detection data.
     """
     imgs_path = os.path.join(results_path, FACES_DIR)
     os.makedirs(imgs_path, exist_ok=True)
@@ -98,6 +95,7 @@ def detect_faces(img_list_path: str, results_path: str, align: bool=True) -> str
     detections_csv = os.path.join(results_path, DETECTIONS_CSV)
 
     if os.path.exists(detections_csv):
+        print(f'Removing: {detections_csv}')
         os.remove(detections_csv)
 
     with open(img_list_path) as list_file:

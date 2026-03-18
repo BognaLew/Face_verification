@@ -6,6 +6,15 @@ import pandas as pd
 from sklearn.metrics import roc_curve
 
 def calculate_eer(prediction_df: pd.DataFrame, fig_path: str):
+    """Calculates EER and creates FAR/FRR vs threshold plot.
+    
+    Args:
+        prediction_df (pd.DataFrame): DataFrame with prediction data. Should 
+            contain:
+            - similarity (float): calculated cosine similarity
+            - label (int): expected decision
+        fig_path (str): Path where created plot is going to be stored.
+    """
     y_true = prediction_df["label"]
     score = prediction_df["similarity"]
 
@@ -18,8 +27,8 @@ def calculate_eer(prediction_df: pd.DataFrame, fig_path: str):
     plt.figure(figsize=(8,5))
     plt.plot(thresholds, fpr, label='FAR')
     plt.plot(thresholds, fnr, label='FRR')
-    plt.axvline(thr, color='red', linestyle='--', label=f'EER Threshold={thr:.2f}')
-
+    plt.axvline(thr, color='red', linestyle='--', 
+                label=f'EER Threshold={thr:.2f}')
     plt.xlabel('Threshold')
     plt.ylabel('Rate')
     plt.legend()
@@ -27,15 +36,14 @@ def calculate_eer(prediction_df: pd.DataFrame, fig_path: str):
     plt.savefig(fig_path)
     plt.clf()
 
-    return eer
+    print(eer)
 
 if __name__=="__main__":
     from constants import AGEDB_RESULTS_PATH, LFW_RESULTS_PATH, PREDICTION_CSV
 
     predictions = pd.read_csv(os.path.join(AGEDB_RESULTS_PATH, PREDICTION_CSV))
-    eer = calculate_eer(
+    calculate_eer(
         prediction_df=predictions, 
         fig_path=os.path.join(os.path.join(AGEDB_RESULTS_PATH, "eer.png"))
     )
-    print(eer)
     

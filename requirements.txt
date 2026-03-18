@@ -1,7 +1,6 @@
-deepface
-numpy
-opencv-python
-pandas
-scikit-learn
-tf-keras
-torch
+deepface==0.0.99
+numpy~=2.4.0
+opencv-python~=4.13.0
+pandas~=3.0.0
+scikit-learn~=1.8.0
+tf-keras~=2.20.0

@@ -9,8 +9,34 @@ from sklearn.metrics.pairwise import cosine_similarity
 from constants import THRESHOLD
 
 
-def predict(pair_list_path: str, features: pd.DataFrame, prediction_csv: str):
+def predict(pair_list_path: str, features: pd.DataFrame, prediction_csv: str) \
+    -> pd.DataFrame:
+    """Calculates cosine similarity for given pairs of pictures and predicts if 
+       they present the same person.
+
+    Args:
+        pair_list_path (str): Path to a file with defined pairs of pictures and
+            expected prediction
+        features (pd.DataFrame): DataFrame with calculated embeddings for each
+            picture. Should contain:
+            - img_id (int): id of an image
+            - detections(List[Dict[str, Any]]): list of dictionaries with 
+                calculated embeddings for detected face. Each dictionary 
+                contains:
+                    - face_image_path (str): Path to an image with detected face
+                    - features (List[float]): Calculated embedding 
+        prediction_csv (str): Path to a csv file where calculated similarity and
+            predictions are going to be stored
+    Returns:
+        pd.DataFrame: DataFrame with columns:
+            - img_1_id (int): id of the first image
+            - img_2_id (int): id of the second image
+            - similarity (float): calculated cosine similarity
+            - prediction (int): decision of the system
+            - label (int): expected decision
+    """
     if os.path.exists(prediction_csv):
+        print(f'Removing: {prediction_csv}')
         os.remove(prediction_csv)
 
     pair_list_content = np.loadtxt(pair_list_path, dtype=int)

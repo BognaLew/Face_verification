@@ -8,7 +8,7 @@ from components.feature_extraction import extract_features
 from components.prediction import predict
 
 
-def pipeline(list_path: str, pair_path: str, results_path: str) -> Dict[str, Any]:
+def pipeline(list_path: str, pair_path: str, results_path: str):
     """Runs face verification pipeline.
     
     Args:
@@ -17,24 +17,21 @@ def pipeline(list_path: str, pair_path: str, results_path: str) -> Dict[str, Any
             predictions.
         results_path (str): Path to a directory where results are going to be 
             stored.
-    Returns:
-        Dict[str, Any]: Dictionary with evaluation metrics.
     """
     detections_csv = detect_faces(
         img_list_path=list_path, 
         results_path=results_path,
     )
-    features = extract_features(
+    features_csv = extract_features(
         detections_csv_path=detections_csv, 
-        features_csv_path=os.path.join(results_path, FEATURES_CSV),
+        results_path=results_path,
     )
-    predictions = predict(
+    prediction_csv = predict(
         pair_list_path=pair_path,
-        features=features,
-        prediction_csv=os.path.join(results_path, PREDICTION_CSV),
+        features_csv_path=features_csv,
+        results_path=results_path,
     )
-    metrics = evaluate(prediction_df=predictions)
-    return metrics
+    evaluate(prediction_csv=prediction_csv)
 
 
 if __name__=="__main__":
@@ -45,5 +42,4 @@ if __name__=="__main__":
         pair_path=AGEDB_PAIR_LIST, 
         results_path=AGEDB_RESULTS_PATH,
     )
-    print(metrics)
     

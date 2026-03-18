@@ -7,22 +7,14 @@ import pandas as pd
 from sklearn.metrics import f1_score, roc_auc_score
 
 
-def evaluate(prediction_df: pd.DataFrame) -> Dict[str, Any]:
+def evaluate(prediction_csv: str):
     """Evaluates system by calculating FAR, FRR, f1-score and ROC AUC.
 
     Args:
-        prediction_df (pd.DataFrame): DataFrame with prediction data. Should 
-            contain:
-            - similarity (float): calculated cosine similarity
-            - prediction (int): decision of a system
-            - label (int): expected decision
-    Returns:
-        Dict[str, Any]: Dictionary with:
-            - FAR (np.float): calculated FAR metric
-            - FRR (np.float): calculated FRR metric
-            - f1-score (float): calculated f1-score
-            - auc (float): calculated ROC AUC
+        prediction_csv (str): Path to a csv file with cosine similarity and 
+            predictions.
     """
+    prediction_df = pd.read_csv(prediction_csv)
     y_true = prediction_df["label"]
     y_pred = prediction_df["prediction"]
     score = prediction_df["similarity"]
@@ -43,12 +35,12 @@ def evaluate(prediction_df: pd.DataFrame) -> Dict[str, Any]:
         "auc": auc,
     }
     
-    return metrics
+    print(metrics)
 
 
 if __name__=="__main__":
     from constants import AGEDB_RESULTS_PATH, LFW_RESULTS_PATH, PREDICTION_CSV
 
-    predictions = pd.read_csv(os.path.join(AGEDB_RESULTS_PATH, PREDICTION_CSV))
-    metrics = evaluate(prediction_df=predictions)
-    print(metrics)
+    metrics = evaluate(
+        prediction_csv=os.path.join(AGEDB_RESULTS_PATH, PREDICTION_CSV)
+        )

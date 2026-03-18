@@ -67,7 +67,7 @@ def predict(pair_list_path: str, features: pd.DataFrame, prediction_csv: str) \
             "img_2_id": pair[1],
             "similarity": score[0],
             "prediction": pred,
-            "label": pair[2]
+            "label": pair[2],
         }, index=[0])
 
         results_df = pd.concat([results_df, result], ignore_index=True)
@@ -87,5 +87,6 @@ if __name__=="__main__":
 
     predict(pair_list_path=LFW_PAIR_LIST,
             features=features,
-            prediction_csv=os.path.join(LFW_RESULTS_PATH, PREDICTION_CSV))
+            prediction_csv=os.path.join(LFW_RESULTS_PATH, PREDICTION_CSV),
+    )
     

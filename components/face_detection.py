@@ -38,7 +38,7 @@ def process_detections(detections: List[Dict[str, Any]], image_id: int,
         results.append({
             "face_image_path": file_path,
             "facial_area": detection["facial_area"],
-            "confidence": detection["confidence"]
+            "confidence": detection["confidence"],
         })
 
         cv2.imwrite(
@@ -67,17 +67,21 @@ def detect_faces_from_image(image_path: str, image_id: int, images_path: str,
             img_path=image_path,
             detector_backend=DETECTOR_BACKEND,
             enforce_detection=False,
-            align=align
+            align=align,
         )
 
-        results = process_detections(detections, image_id, images_path)
+        results = process_detections(
+            detections=detections, 
+            image_id=image_id, 
+            images_path=images_path,
+        )
         header = True if image_id==0 else False
         pd.DataFrame([{
             "img_id": image_id,
-            "detections": results
+            "detections": results,
         }]).to_csv(detections_csv, mode='a', header=header, index=False)
-    except:
-        pass
+    except Exception as e:
+        print(f'Exception occured: {e}')
 
 def detect_faces(img_list_path: str, results_path: str, align: bool=True) -> str:
     """Runs face detection for each image from the list.
@@ -107,7 +111,8 @@ def detect_faces(img_list_path: str, results_path: str, align: bool=True) -> str
                 image_id=i, 
                 images_path=imgs_path, 
                 detections_csv=detections_csv, 
-                align=align)
+                align=align,
+            )
     return detections_csv
 
 
@@ -115,4 +120,7 @@ if __name__=="__main__":
     from constants import AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH, \
        LFW_IMAGE_LIST, LFW_RESULTS_PATH
     
-    detect_faces(AGEDB_IMAGE_LIST, AGEDB_RESULTS_PATH)
+    detect_faces(
+        img_list_path=AGEDB_IMAGE_LIST, 
+        results_path=AGEDB_RESULTS_PATH,
+    )

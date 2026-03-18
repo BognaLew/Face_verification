@@ -44,6 +44,6 @@ if __name__=="__main__":
     predictions = pd.read_csv(os.path.join(AGEDB_RESULTS_PATH, PREDICTION_CSV))
     calculate_eer(
         prediction_df=predictions, 
-        fig_path=os.path.join(os.path.join(AGEDB_RESULTS_PATH, "eer.png"))
+        fig_path=os.path.join(os.path.join(AGEDB_RESULTS_PATH, "eer.png")),
     )
     

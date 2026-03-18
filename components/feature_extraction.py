@@ -43,12 +43,12 @@ def extract_features(detections_csv_path: str, features_csv_path: str) -> pd.Dat
             )
             results.append({
                 "face_image_path": det_data["face_image_path"],
-                "features": result[0]["embedding"]
+                "features": result[0]["embedding"],
             })
 
         f = pd.DataFrame([{
             "img_id": img_data["img_id"],
-            "detections": results
+            "detections": results,
         }])
 
         features = pd.concat([features, f], ignore_index=True)
@@ -65,6 +65,6 @@ if __name__=="__main__":
 
     extract_features(
         detections_csv_path=os.path.join(LFW_RESULTS_PATH, DETECTIONS_CSV), 
-        features_csv_path=os.path.join(LFW_RESULTS_PATH, FEATURES_CSV)
+        features_csv_path=os.path.join(LFW_RESULTS_PATH, FEATURES_CSV),
     )
     

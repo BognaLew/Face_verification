@@ -40,7 +40,7 @@ def evaluate(prediction_df: pd.DataFrame) -> Dict[str, Any]:
         "FAR": far,
         "FRR": frr,
         "f1-score": f_score,
-        "auc": auc
+        "auc": auc,
     }
     
     return metrics
@@ -50,5 +50,5 @@ if __name__=="__main__":
     from constants import AGEDB_RESULTS_PATH, LFW_RESULTS_PATH, PREDICTION_CSV
 
     predictions = pd.read_csv(os.path.join(AGEDB_RESULTS_PATH, PREDICTION_CSV))
-    metrics = evaluate(predictions)
+    metrics = evaluate(prediction_df=predictions)
     print(metrics)
